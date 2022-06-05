@@ -73,44 +73,79 @@
     <title>Deepin/Ubuntu搭建hexo个人博客</title>
     <url>/2022/06/05/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="/assets/js/Meting.min.js"></script><p>欢迎来到海之家博客! 接下来介绍本博客搭建过程！<span id="more"></span></p>
-<h2 id="搭建hexo博客">搭建hexo博客</h2>
-<h3 id="安装git">安装git</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get install git</span><br></pre></td></tr></table></figure>
-<h3 id="安装node-js">安装Node.js</h3>
-<p>首先安装nvm</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ wget -qO- https://raw.github.com/creationix/nvm/master/install.sh | sh</span><br></pre></td></tr></table></figure>
+<h2 id="搭建hexo博客"><a href="#搭建hexo博客" class="headerlink" title="搭建hexo博客"></a>搭建hexo博客</h2><h3 id="安装git"><a href="#安装git" class="headerlink" title="安装git"></a>安装git</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get install git</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装Node-js"><a href="#安装Node-js" class="headerlink" title="安装Node.js"></a>安装Node.js</h3><p>首先安装nvm</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ wget -qO- https://raw.github.com/creationix/nvm/master/install.sh | sh</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
 <p>安装完成后，重启终端并执行下列命令即可安装 Node.js</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nvm install stable</span><br></pre></td></tr></table></figure>
-<h3 id="安装hexo">安装hexo</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+
+<p>或者直接安装如下：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</span><br><span class="line">sudo apt install nodejs</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装hexo"><a href="#安装hexo" class="headerlink" title="安装hexo"></a>安装hexo</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+
 <p>hexo安装完成，开始建站。</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo init &lt;folder&gt;  <span class="comment"># &lt;folder&gt; 文件夹名称可以随意取，该文件夹为博客根目录</span></span><br><span class="line"><span class="built_in">cd</span> &lt;folder&gt;</span><br><span class="line">npm install</span><br><span class="line"></span><br><span class="line">hexo generate <span class="comment">#生成静态文件</span></span><br><span class="line">hexo server <span class="comment">#启动hexo服务器，可以用浏览器打开网址： http://localhost:4000/ 来进行预览了</span></span><br></pre></td></tr></table></figure>
-<h2 id="部署github">部署github</h2>
-<h3 id="新建repository">新建Repository</h3>
-<p>配置git个人信息</p>
+
+
+
+<h2 id="部署github"><a href="#部署github" class="headerlink" title="部署github"></a>部署github</h2><h3 id="新建Repository"><a href="#新建Repository" class="headerlink" title="新建Repository"></a>新建Repository</h3><p>配置git个人信息</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config --global user.name <span class="string">&quot;github用户名&quot;</span></span><br><span class="line">git config --global user.email <span class="string">&quot;你注册的邮箱地址&quot;</span></span><br></pre></td></tr></table></figure>
-<p>创建一个新的repositories, 填写repositories名称为<username>.github.io，<username>为你的github账户名，例如github账户名为future2021，那么repositories名称为 <em><a href="http://future2021.github.io">future2021.github.io</a></em>。</username></username></p>
-<h3 id="配置ssh">配置SSH</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">&quot;你注册的github邮箱地址&quot;</span> <span class="comment"># 生成id_rsa.pub文件</span></span><br><span class="line">vim ~/.ssh/id_rsa.pub <span class="comment">#复制该文件内容</span></span><br></pre></td></tr></table></figure>
+
+<p>创建一个新的repositories, 填写repositories名称为<username>.github.io，<username>为你的github账户名，例如github账户名为future2021，那么repositories名称为 _future2021.github.io_。</username></username></p>
+<h3 id="配置SSH"><a href="#配置SSH" class="headerlink" title="配置SSH"></a>配置SSH</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">&quot;你注册的github邮箱地址&quot;</span> <span class="comment"># 生成id_rsa.pub文件</span></span><br><span class="line">vim ~/.ssh/id_rsa.pub <span class="comment">#复制该文件内容</span></span><br></pre></td></tr></table></figure>
+
 <p>复制上述d_rsa.pub文件内容在github中生成ssh key，具体路径github – settings – SSH and GPG keys – New SSH key – 粘贴内容生成key。最后输入以下命令判断SSH是否配置好。</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com </span><br></pre></td></tr></table></figure>
+
 <p>配置成功出现</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Hi! You<span class="string">&#x27;ve successfully authenticated, but GitHub oes not provide shell access.</span></span><br></pre></td></tr></table></figure>
-<h3 id="配置deployment">配置Deployment</h3>
-<p>在<folder>中找到_config.yml文件，找到 #Deployment，按照以下修改_</folder></p>
+
+
+
+<h3 id="配置Deployment"><a href="#配置Deployment" class="headerlink" title="配置Deployment"></a>配置Deployment</h3><p>在<folder>中找到_config.yml文件，找到 #Deployment，按照以下修改_</folder></p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  <span class="built_in">type</span>: git</span><br><span class="line">  repo: git@github.com:&lt;username&gt;/&lt;username&gt;.github.io.git <span class="comment"># &lt;username&gt;为github账户名, 实际上就是新建Repository的仓库地址</span></span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
-<h3 id="启动hexo博客">启动hexo博客</h3>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean <span class="comment"># 清除缓存 ,网页正常情况下可以忽略此条命令,执行该指令后,会删掉站点根目录下的public文件夹</span></span><br><span class="line">hexo g <span class="comment"># #生成静态网页 (执行 $ hexo g后会在站点根目录下生成public文件夹, hexo会将&quot;/blog/source/&quot; 下面的.md后缀的文件编译为.html后缀的文件,存放在&quot;/blog/public/ &quot; 路径下)</span></span><br><span class="line">hexo d <span class="comment"># 将本地数据部署到远端服务器(如github)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="启动hexo博客"><a href="#启动hexo博客" class="headerlink" title="启动hexo博客"></a>启动hexo博客</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean <span class="comment"># 清除缓存 ,网页正常情况下可以忽略此条命令,执行该指令后,会删掉站点根目录下的public文件夹</span></span><br><span class="line">hexo g <span class="comment"># #生成静态网页 (执行 $ hexo g后会在站点根目录下生成public文件夹, hexo会将&quot;/blog/source/&quot; 下面的.md后缀的文件编译为.html后缀的文件,存放在&quot;/blog/public/ &quot; 路径下)</span></span><br><span class="line">hexo d <span class="comment"># 将本地数据部署到远端服务器(如github)</span></span><br></pre></td></tr></table></figure>
+
 <p>该安装过程学习自<a href="https://www.jianshu.com/p/f2285d63b3a8">Yc_何</a>。</p>
-<h2 id="添加博客主题">添加博客主题</h2>
-<p>本博客主题为<a href="https://github.com/Shen-Yu/hexo-theme-ayer">ayer</a>，是一个干净且优雅的 Hexo 主题，自带响应式，加载速度很快，该有的功能都有，主题作者的<a href="https://shen-yu.gitee.io/">blog</a>。</p>
+<h2 id="添加博客主题"><a href="#添加博客主题" class="headerlink" title="添加博客主题"></a>添加博客主题</h2><p>本博客主题为<a href="https://github.com/Shen-Yu/hexo-theme-ayer">ayer</a>，是一个干净且优雅的 Hexo 主题，自带响应式，加载速度很快，该有的功能都有，主题作者的<a href="https://shen-yu.gitee.io/">blog</a>。</p>
 <p>在<folder>中，下载hexo-theme-ayer。</folder></p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 国内用户如果速度较慢，可以把github地址替换为：https://gitee.com/mirrors/ayer.git</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/Shen-Yu/hexo-theme-ayer.git themes/ayer</span><br></pre></td></tr></table></figure>
+
 <p>修改<folder>中 _config 的theme值为ayer。</folder></p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Extensions</span></span><br><span class="line"><span class="comment">## Plugins: https://hexo.io/plugins/</span></span><br><span class="line"><span class="comment">## Themes: https://hexo.io/themes/</span></span><br><span class="line">theme: ayer</span><br></pre></td></tr></table></figure>
+
 <p>修改ayer主题的配置文件_config.ayer.yml即可。主要修改可参照主题作者的<a href="https://shen-yu.gitee.io/2019/ayer/">博客</a>。</p>
 <p>最后再次重启hexo博客。</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+
+<h3 id="Hexo博客迁移"><a href="#Hexo博客迁移" class="headerlink" title="Hexo博客迁移"></a>Hexo博客迁移</h3><p>​	重装系统后迁移系统操作流程如下：</p>
+<ol>
+<li><p>用以上方法安装Node.js</p>
+</li>
+<li><p>安装hexo，但不要执行<code>hexo init</code>，保留原有的部分文件有</p>
+<ul>
+<li>_config.yml：站点配置</li>
+<li>package.json：说明使用那些包</li>
+<li>scaffolds：文章的模板</li>
+<li>source：自己写的博客文件</li>
+<li>themes：主题</li>
+<li>.gitignore：限定在提交的时候哪些文件可以忽略</li>
+</ul>
+</li>
+<li><p>执行npm install</p>
+</li>
+<li><p>安装一些必要插件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save # 为了使用hexo d来部署到git上 </span><br><span class="line">npm install hexo-generator-feed --save # 为了建立RSS订阅</span><br><span class="line">npm install hexo-generator-sitemap --save # 为了建立站点地图</span><br><span class="line"><span class="meta">#</span><span class="bash">本人的情况：迁移时，npm install后只执行上面三条即可，完整有如下，都是package.json中提到的</span></span><br><span class="line">npm install hexo-generator-index --save</span><br><span class="line">npm install hexo-generator-archive --save</span><br><span class="line">npm install hexo-generator-category --save</span><br><span class="line">npm install hexo-generator-tag --save</span><br><span class="line">npm install hexo-server --save</span><br><span class="line">npm install hexo-deployer-git --save</span><br><span class="line">npm install hexo-deployer-heroku --save</span><br><span class="line">npm install hexo-deployer-rsync --save</span><br><span class="line">npm install hexo-deployer-openshift --save</span><br><span class="line">npm install hexo-renderer-marked --save</span><br><span class="line">npm install hexo-renderer-stylus --save</span><br><span class="line">npm install hexo-generator-feed --save</span><br><span class="line">npm install hexo-generator-sitemap --save</span><br></pre></td></tr></table></figure>
+
+<p>参考<a href="https://www.jianshu.com/p/dd111ea16f4d">[1]</a><a href="https://www.niuqi360.com/linux/install-and-create-blog-with-hexo-on-ubuntu-20-04/">[2]</a></p>
+</li>
+<li><p>部署到github，方法和上面的一样，因为保留了_config.yml，只需要为新机配置ssh即可。</p>
+</li>
+</ol>
 ]]></content>
       <categories>
         <category>博客搭建</category>
