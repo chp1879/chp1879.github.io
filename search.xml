@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>MapReduce理解</title>
+    <url>/2021/11/17/MapReduce/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="/assets/js/Meting.min.js"></script><h3 id="mapreduce解析">MapReduce解析</h3>
+<p>Map 本质是拆解， Reduce的本质是组合。MapReduce 包括Input，Split，Map，Shuffle，Reduce，Finalize，即将数据划分拆解重排组合输出。<span id="more"></span></p>
+<p>统计单词次数</p>
+<p><img src="https://pic.imgdb.cn/item/619514432ab3f51d9189f1d7.png" alt="统计单词计数"></p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Map</span>(string key, string value) &#123;</span><br><span class="line">    <span class="comment">//key: the id of a line</span></span><br><span class="line">    <span class="comment">//value: the content of the line</span></span><br><span class="line">    <span class="keyword">for</span> each word in value:</span><br><span class="line">    	<span class="built_in">OutputTemp</span>(word, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">Reduce</span>(string key, list valueList) &#123;</span><br><span class="line">    <span class="comment">//key: the name of a word</span></span><br><span class="line">    <span class="comment">//valueList: the appearances of this word</span></span><br><span class="line">    <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> value in valueList:</span><br><span class="line">    	sum += value;</span><br><span class="line">    <span class="built_in">OutputFinal</span>(key, sum);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>建立倒排索引</p>
+<p><img src="https://pic.imgdb.cn/item/619514812ab3f51d918a2ec4.png" alt="倒排索引"></p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Map</span>(string key, string value) &#123;</span><br><span class="line">    <span class="comment">//key: the id of a document</span></span><br><span class="line">    <span class="comment">//value: the content of the document</span></span><br><span class="line">    <span class="keyword">for</span> each word in value:</span><br><span class="line">    	<span class="built_in">OutputTemp</span>(word, key);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">Reduce</span>(string key, list valueList) &#123;</span><br><span class="line">    <span class="comment">//key: the name of a word</span></span><br><span class="line">    <span class="comment">//valueList: the appearances of this word in documents</span></span><br><span class="line">    List sumList;</span><br><span class="line">    <span class="keyword">for</span> value in valueList:</span><br><span class="line">    	sumList.<span class="built_in">append</span>(value);</span><br><span class="line">    <span class="built_in">OutputFinal</span>(key, sumList);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="mapreduce-架构">MapReduce 架构</h3>
+<p><img src="https://pic.imgdb.cn/item/619514a22ab3f51d918a4f21.png" alt="mapreduce"></p>
+<p><img src="https://pic.imgdb.cn/item/619514b12ab3f51d918a5ed9.png" alt="mapreducepaper"></p>
+<ol>
+<li>用户程序中的MapReduce库首先将输入文件分成M份，每份大小一般是16到64MB，这个可以由用户可选参数控制，然后便会将程序在集群的机器上拷贝。</li>
+<li>在程序中，有一个程序比较特别，那就是master程序，其他的程序都是worker程序，worker程序用来接收master分配的任务。根据上面分配可知，一共有M个Map任务和R个reduce任务等待分配，master会选择空闲的worker，然后分配map或者reduce任务给他们。</li>
+<li>当一个worker接收到一个map任务时，便会读取对应的输入。他会从输入文件中解析出一组键值对，并将每一个键值对依次传给用户自定义的map函数，而map函数输出的中间键值对会被保存到内存中去。</li>
+<li>期性地，这些被缓存在内存中的键值对数据会由前面提到parition函数分成R份后写入到本地文件中去。这些被存到本地的键值对数据的地址会被回传给master，之后再由master传递给reduce任务的worker。</li>
+<li>当一个reduce任务的worker被master告知了这些地址，它便会使用远程程序调用方式从那些map任务的worker机器本地磁盘上读取数据。当一个reduce任务的worker读完了所有的中间数据后，他会根据中间键排序，从而使得具有相同的中间键能够被分到一起去。这个排序过程是需要的，因为有时候可能不同的中间键值对数据会被映射到同一个reduce任务的worker。如果中间键值对数据过大很难在内存张排序，外部排序会被使用。</li>
+<li>reduce的worker会被已排完序的数据中迭代，对每一个唯一的中间key，worker会将这个key和对应的数据集合传递给用户定义的reduce函数。reduce函数的输出会被添加到最终的一个输出文件中去。</li>
+<li>当所有的map和reduce任务都完成后，master会唤醒用户程序。此时，执行mapreduce的用户程序会得到一个返回结果。</li>
+</ol>
+<p>当成功完成后，mapreduce执行的结果输出会存在R个输出文件中，一般情况下，用户并不需要将这R个输出文件合并成一个文件，这些文件经常会被作为输入文件进行另外一个mapreduce过程，或者其他的分布式程序再次被切分成多个文件。</p>
+<p>参考文献MapReduce: Simplified Data Processing on Large Clusters以及 <a href="https://blog.csdn.net/fusan2004/article/details/51169078">blog</a>。</p>
+]]></content>
+      <categories>
+        <category>分布式学习</category>
+      </categories>
+      <tags>
+        <tag>分布式</tag>
+        <tag>大数据</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Question</title>
+    <url>/2022/03/15/Question/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="/assets/js/Meting.min.js"></script><h4 id="github-fatal-unable-to-access-https-github-com-git-failed-to-connect-to-127-0-0-1-port-8888-拒绝连接解决">Github: fatal: unable to access ‘<a href="https://github.com/**.git">https://github.com/**.git</a>’: Failed to connect to 127.0.0.1 port 8888: 拒绝连接解决</h4>
+<p>出现问题的原因是设置了代理上网，可以使用<code>git config --global -l</code>可以查看代理，在使用以下指令后依然无效：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git config --global --unset http.proxy</span><br><span class="line">git config --global --unset https.proxy</span><br></pre></td></tr></table></figure>
+<p>正确的做法：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">export https_proxy=&quot;&quot;</span><br><span class="line">export http_proxy=&quot;&quot;</span><br><span class="line">export ftp_proxy=&quot;&quot;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <tags>
+        <tag>-问题收集</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>buttonRpc</title>
+    <url>/2021/11/30/buttonRpc/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="/assets/js/Meting.min.js"></script><h3 id="preliminary">Preliminary</h3>
+<h4 id="std-enable-if">std::enable_if</h4>
+<p>C++11 引入了 <code>std::enable_if</code>函数，功能为满足条件时类型有效，作为选择类型的小工具，其广泛的应用在 C++ 的模板元编程（meta programming）中，包含在<code>#include &lt;type_traits&gt;</code>中，函数原型如下：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">bool</span> _if, <span class="class"><span class="keyword">class</span> <span class="title">T</span> =</span> <span class="keyword">void</span>&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">enable_if</span>;</span></span><br></pre></td></tr></table></figure>
+<p>可能的函数实现:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">bool</span> _if, <span class="class"><span class="keyword">class</span> <span class="title">T</span> =</span> <span class="keyword">void</span>&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">enable_if</span> &#123;</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;calss T&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">enable_if</span>&lt;</span><span class="literal">true</span>, T&gt; &#123;<span class="keyword">typedef</span> T type&#125;</span><br></pre></td></tr></table></figure>
+<p>由上可知，只有当第一个模板参数为true时，enable_if会包含一个type=T的公有成员，否则没有该公有成员。</p>
+<p>在实际使用过程中，<code>std::enable_if</code> 可用于：1)限制模板函数的参数类型；2)模板类型偏特化。</p>
+<p>在某些场景下，我们需要实现只有特定类型可以调用的模板函数。如下代码所示，通过对返回值使用<code>std::enable_if</code>和在模板参数中使用<code>std::enable_if</code>均实现了只允许整形参数调用函数的功能。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// enable_if example: two ways of using enable_if</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;type_traits&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 1. 返回类型 (bool)只有当T是整型时才有效:</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="keyword">typename</span> std::enable_if&lt;std::is_integral&lt;T&gt;::value,<span class="keyword">bool</span>&gt;::<span class="function">type</span></span><br><span class="line"><span class="function"> <span class="title">is_odd</span> <span class="params">(T i)</span> </span>&#123;<span class="keyword">return</span> <span class="built_in"><span class="keyword">bool</span></span>(i%<span class="number">2</span>);&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. 第二个模板参数只有当T是整型时才有效:</span></span><br><span class="line"><span class="keyword">template</span> &lt; <span class="class"><span class="keyword">class</span> <span class="title">T</span>, <span class="keyword">class</span> =</span> <span class="keyword">typename</span> std::enable_if&lt;std::is_integral&lt;T&gt;::value&gt;::type &gt;</span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">is_even</span> <span class="params">(T i)</span> </span>&#123;<span class="keyword">return</span> !<span class="built_in"><span class="keyword">bool</span></span>(i%<span class="number">2</span>);&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">short</span> <span class="keyword">int</span> i = <span class="number">1</span>;  </span><br><span class="line">    <span class="comment">//float i = 1.0; </span></span><br><span class="line">    std::cout &lt;&lt; std::boolalpha;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;i is odd: &quot;</span> &lt;&lt; <span class="built_in">is_odd</span>(i) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;i is even: &quot;</span> &lt;&lt; <span class="built_in">is_even</span>(i) &lt;&lt; std::endl;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//short int i = 1, 输出</span></span><br><span class="line"><span class="comment">//i is odd: true</span></span><br><span class="line"><span class="comment">//i is even: false</span></span><br><span class="line"><span class="comment">// float i = 1.0, 编译错误</span></span><br><span class="line"><span class="comment">//error: no matching function for call to ‘is_odd(float&amp;)’</span></span><br><span class="line"><span class="comment">//error: no matching function for call to ‘is_even(float&amp;)’</span></span><br><span class="line">    </span><br></pre></td></tr></table></figure>
+<p>在使用模板编程时，可以利用<code>std::enable_if</code>的特性根据模板参数的不同特性进行不同的类型选择。</p>
+<p>如下所示，我们可以实现一个检测变量是否为智能指针的实现：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;type_traits&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;memory&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">is_smart_pointer_helper</span> :</span> <span class="keyword">public</span> std::false_type &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">is_smart_pointer_helper</span>&lt;</span>std::shared_ptr&lt;T&gt; &gt; : <span class="keyword">public</span> std::true_type &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">is_smart_pointer_helper</span>&lt;</span>std::unique_ptr&lt;T&gt; &gt; : <span class="keyword">public</span> std::true_type &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">is_smart_pointer_helper</span>&lt;</span>std::weak_ptr&lt;T&gt; &gt; : <span class="keyword">public</span> std::true_type &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">is_smart_pointer</span> :</span> <span class="keyword">public</span> is_smart_pointer_helper&lt;<span class="keyword">typename</span> std::remove_cv&lt;T&gt;::type&gt; &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">typename</span> std::enable_if&lt;is_smart_pointer&lt;T&gt;::value,<span class="keyword">void</span>&gt;::<span class="function">type </span></span><br><span class="line"><span class="function"><span class="title">check_smart_pointer</span><span class="params">(<span class="keyword">const</span> T&amp; t)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  std::cout &lt;&lt; <span class="string">&quot;is smart pointer&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">typename</span> std::enable_if&lt;!is_smart_pointer&lt;T&gt;::value,<span class="keyword">void</span>&gt;::<span class="function">type <span class="title">check_smart_pointer</span><span class="params">(<span class="keyword">const</span> T&amp; t)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  std::cout &lt;&lt; <span class="string">&quot;not smart pointer&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">int</span>* <span class="title">p</span><span class="params">(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">2</span>))</span></span>;</span><br><span class="line">  <span class="function">std::shared_ptr&lt;<span class="keyword">int</span>&gt; <span class="title">pp</span><span class="params">(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">2</span>))</span></span>;</span><br><span class="line">  <span class="function">std::unique_ptr&lt;<span class="keyword">int</span>&gt; <span class="title">upp</span><span class="params">(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">4</span>))</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">check_smart_pointer</span>(p);</span><br><span class="line">  <span class="built_in">check_smart_pointer</span>(pp);</span><br><span class="line">  <span class="built_in">check_smart_pointer</span>(upp);</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出</span></span><br><span class="line"><span class="comment">//not smart pointer</span></span><br><span class="line"><span class="comment">//is smart pointer</span></span><br><span class="line"><span class="comment">//is smart pointer</span></span><br></pre></td></tr></table></figure>
+<p><a href="https://www.jb51.net/article/198482.htm">参考</a>。</p>
+]]></content>
+      <tags>
+        <tag>rpc</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Deepin/Ubuntu搭建hexo个人博客</title>
+    <url>/2022/06/05/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="/assets/js/Meting.min.js"></script><p>欢迎来到海之家博客! 接下来介绍本博客搭建过程！<span id="more"></span></p>
+<h2 id="搭建hexo博客">搭建hexo博客</h2>
+<h3 id="安装git">安装git</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get install git</span><br></pre></td></tr></table></figure>
+<h3 id="安装node-js">安装Node.js</h3>
+<p>首先安装nvm</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ wget -qO- https://raw.github.com/creationix/nvm/master/install.sh | sh</span><br></pre></td></tr></table></figure>
+<p>安装完成后，重启终端并执行下列命令即可安装 Node.js</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nvm install stable</span><br></pre></td></tr></table></figure>
+<h3 id="安装hexo">安装hexo</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+<p>hexo安装完成，开始建站。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo init &lt;folder&gt;  <span class="comment"># &lt;folder&gt; 文件夹名称可以随意取，该文件夹为博客根目录</span></span><br><span class="line"><span class="built_in">cd</span> &lt;folder&gt;</span><br><span class="line">npm install</span><br><span class="line"></span><br><span class="line">hexo generate <span class="comment">#生成静态文件</span></span><br><span class="line">hexo server <span class="comment">#启动hexo服务器，可以用浏览器打开网址： http://localhost:4000/ 来进行预览了</span></span><br></pre></td></tr></table></figure>
+<h2 id="部署github">部署github</h2>
+<h3 id="新建repository">新建Repository</h3>
+<p>配置git个人信息</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config --global user.name <span class="string">&quot;github用户名&quot;</span></span><br><span class="line">git config --global user.email <span class="string">&quot;你注册的邮箱地址&quot;</span></span><br></pre></td></tr></table></figure>
+<p>创建一个新的repositories, 填写repositories名称为<username>.github.io，<username>为你的github账户名，例如github账户名为future2021，那么repositories名称为 <em><a href="http://future2021.github.io">future2021.github.io</a></em>。</username></username></p>
+<h3 id="配置ssh">配置SSH</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">&quot;你注册的github邮箱地址&quot;</span> <span class="comment"># 生成id_rsa.pub文件</span></span><br><span class="line">vim ~/.ssh/id_rsa.pub <span class="comment">#复制该文件内容</span></span><br></pre></td></tr></table></figure>
+<p>复制上述d_rsa.pub文件内容在github中生成ssh key，具体路径github – settings – SSH and GPG keys – New SSH key – 粘贴内容生成key。最后输入以下命令判断SSH是否配置好。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com </span><br></pre></td></tr></table></figure>
+<p>配置成功出现</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Hi! You<span class="string">&#x27;ve successfully authenticated, but GitHub oes not provide shell access.</span></span><br></pre></td></tr></table></figure>
+<h3 id="配置deployment">配置Deployment</h3>
+<p>在<folder>中找到_config.yml文件，找到 #Deployment，按照以下修改_</folder></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  <span class="built_in">type</span>: git</span><br><span class="line">  repo: git@github.com:&lt;username&gt;/&lt;username&gt;.github.io.git <span class="comment"># &lt;username&gt;为github账户名, 实际上就是新建Repository的仓库地址</span></span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+<h3 id="启动hexo博客">启动hexo博客</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean <span class="comment"># 清除缓存 ,网页正常情况下可以忽略此条命令,执行该指令后,会删掉站点根目录下的public文件夹</span></span><br><span class="line">hexo g <span class="comment"># #生成静态网页 (执行 $ hexo g后会在站点根目录下生成public文件夹, hexo会将&quot;/blog/source/&quot; 下面的.md后缀的文件编译为.html后缀的文件,存放在&quot;/blog/public/ &quot; 路径下)</span></span><br><span class="line">hexo d <span class="comment"># 将本地数据部署到远端服务器(如github)</span></span><br></pre></td></tr></table></figure>
+<p>该安装过程学习自<a href="https://www.jianshu.com/p/f2285d63b3a8">Yc_何</a>。</p>
+<h2 id="添加博客主题">添加博客主题</h2>
+<p>本博客主题为<a href="https://github.com/Shen-Yu/hexo-theme-ayer">ayer</a>，是一个干净且优雅的 Hexo 主题，自带响应式，加载速度很快，该有的功能都有，主题作者的<a href="https://shen-yu.gitee.io/">blog</a>。</p>
+<p>在<folder>中，下载hexo-theme-ayer。</folder></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 国内用户如果速度较慢，可以把github地址替换为：https://gitee.com/mirrors/ayer.git</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/Shen-Yu/hexo-theme-ayer.git themes/ayer</span><br></pre></td></tr></table></figure>
+<p>修改<folder>中 _config 的theme值为ayer。</folder></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Extensions</span></span><br><span class="line"><span class="comment">## Plugins: https://hexo.io/plugins/</span></span><br><span class="line"><span class="comment">## Themes: https://hexo.io/themes/</span></span><br><span class="line">theme: ayer</span><br></pre></td></tr></table></figure>
+<p>修改ayer主题的配置文件_config.ayer.yml即可。主要修改可参照主题作者的<a href="https://shen-yu.gitee.io/2019/ayer/">博客</a>。</p>
+<p>最后再次重启hexo博客。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>博客搭建</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ttcp</title>
+    <url>/2021/11/23/ttcp/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="/assets/js/Meting.min.js"></script><p>性能指标</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">带宽：MB/s</span><br><span class="line">吞吐量：messages/s, queries/s(QPS), transactions/s(TPS)</span><br><span class="line">延迟：</span><br><span class="line">资源使用率：</span><br><span class="line">其他开销：（压缩和加盟）CPU使用</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>网络编程学习</category>
+      </categories>
+      <tags>
+        <tag>网络编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>tuple遍历</title>
+    <url>/2021/11/25/tuple%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="/assets/js/Meting.min.js"></script><h3 id="tuple">tuple</h3>
+<p>pair类型是每个成员变量各自可以是任意类型，但只能有两个成员。相对与pair，tuple可以有任意数量的成员，但是每个确定的tuple类型的成员数目是固定的。<span id="more"></span></p>
+<h4 id="tuple使用">tuple使用</h4>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;tuple&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    tuple&lt;<span class="keyword">int</span>,string,<span class="keyword">float</span>, pair&lt;<span class="keyword">int</span>, <span class="keyword">int</span>&gt;&gt; <span class="built_in">tp</span>(<span class="number">1</span>, <span class="string">&quot;hello world&quot;</span> ,<span class="number">3.1</span>, &#123;<span class="number">8</span>,<span class="number">8</span>&#125;);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;第一个元素为:&quot;</span>&lt;&lt;get&lt;<span class="number">0</span>&gt;(tp)&lt;&lt;endl;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;第二个元素为:&quot;</span>&lt;&lt;get&lt;<span class="number">1</span>&gt;(tp)&lt;&lt;endl;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;第三个元素为:&quot;</span>&lt;&lt;get&lt;<span class="number">2</span>&gt;(tp)&lt;&lt;endl;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;第三个元素为:&quot;</span>&lt;&lt;get&lt;<span class="number">3</span>&gt;(tp).first &lt;&lt; <span class="string">&quot; &quot;</span>&lt;&lt; get&lt;<span class="number">3</span>&gt;(tp).second &lt;&lt; endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出：</span></span><br><span class="line"><span class="comment">第一个元素为:1</span></span><br><span class="line"><span class="comment">第二个元素为:hello world</span></span><br><span class="line"><span class="comment">第三个元素为:3.1</span></span><br><span class="line"><span class="comment">第三个元素为:8 8</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<p>tuple可以存储引用，pair，但是不能存储stl容器。</p>
+<h4 id="tuple的操作">tuple的操作</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">操作</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">make_tuple(v1, v2, …, vn)</td>
+<td>返回一个给定初始值初始化的tuple,类型从初始值推断</td>
+</tr>
+<tr>
+<td style="text-align:left">t1 == t2</td>
+<td>当俩个tuple具有相同数量的成员且成员对应相等时</td>
+</tr>
+<tr>
+<td style="text-align:left">t1 != t2</td>
+<td>与上一个相反</td>
+</tr>
+<tr>
+<td style="text-align:left">get<i><em>(t)</em></i></td>
+<td>返回t的第i个数据成员</td>
+</tr>
+<tr>
+<td style="text-align:left">tuple_size<Tuple>::value</Tuple></td>
+<td>给定了tuple中成员的数量</td>
+</tr>
+<tr>
+<td style="text-align:left">get<Type>(t)</Type></td>
+<td>返回Type类型的数据成员，t中仅有唯一的Type类型数据</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tuple遍历">tuple遍历</h3>
+<p>tuple的get<i>需要的索引i只能是编译期常量，因此是无法依赖现有的循环语句去实现索引的递增的。参考<a href="https://www.cnblogs.com/apocelipes/p/14536236.html">博客</a>学习tuple遍历以及模板元编程。</i></p>
+<p>标准库的for_each:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">Iterator</span>, <span class="keyword">class</span> <span class="title">UnaryFunction</span>&gt;</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">for_each</span><span class="params">(Iterator first, Iterator last, UnaryFunction f)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="comment">//UnaryFunction的函数签名为void fun(const Type &amp;a)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span></span><br><span class="line"><span class="function"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span></span><br><span class="line"><span class="function"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span></span><br><span class="line"><span class="function"><span class="keyword">using</span> <span class="keyword">namespace</span> std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">f</span> &#123;</span></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123; cout &lt;&lt; i &lt;&lt; <span class="string">&quot; &quot;</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; vec = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;lambda:&quot;</span>;</span><br><span class="line">    for_each(vec.<span class="built_in">begin</span>(), vec.<span class="built_in">end</span>(), [=](<span class="keyword">int</span> i)&#123;</span><br><span class="line">        cout &lt;&lt; i &lt;&lt; <span class="string">&quot; &quot;</span>;</span><br><span class="line">    &#125;);</span><br><span class="line">    cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;opeator():&quot;</span>;</span><br><span class="line">    for_each(vec.<span class="built_in">begin</span>(), vec.<span class="built_in">end</span>(), <span class="built_in">f</span>());</span><br><span class="line">    cout &lt;&lt; endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出：</span></span><br><span class="line"><span class="comment">lambda:1 2 3 4 5 </span></span><br><span class="line"><span class="comment">opeator():1 2 3 4 5 </span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<p>由于tuple没有迭代器，因此for_each_tuple设计为以下形式：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">Tuple</span>, <span class="keyword">class</span> <span class="title">Functor</span>&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">for_each_tuple</span><span class="params">(<span class="keyword">const</span> Tuple &amp;t, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> element in t : <span class="built_in">f</span>(t);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="原始方案">原始方案</h4>
+<p>该方案使用模板递归思想，逐个遍历Tuple中的元素。从0开始，每遍历处理完一项就让index+1，然后递归调用<code>for_each_tuple_impl</code>。如果到了最后一个元素+1的位置，函数就返回，遍历结束。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor, <span class="keyword">int</span> Index&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">for_each_tuple_impl</span><span class="params">(Tuple &amp;&amp;t, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(Index &gt;= std::tuple_size&lt; std::<span class="keyword">remove_reference_t</span>&lt;Tuple&gt; &gt;::value) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">f</span>(std::get&lt;Index&gt;(t));</span><br><span class="line">        for_each_tuple_impl&lt;Tuple, Functor, Index+<span class="number">1</span>&gt;(std::forward&lt;Tuple&gt;(t), std::forward&lt;Functor&gt;(f));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">for_each_tuple</span><span class="params">(Tuple &amp;&amp;t, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">    for_each_tuple_impl&lt;Tuple, Functor, <span class="number">0</span>&gt;(std::forward&lt;Tuple&gt;(t), std::forward&lt;Functor&gt;(f));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Index 属于非类型形参，是内置类型形参，在模板定义的内部是常量值，只能是整型，指针和引用，一般不应用于函数模板中，参考<a href="https://www.runoob.com/w3cnote/c-templates-detail.html">菜鸟教程</a>。</p>
+<p><code>std::remove_reference_t&lt;&gt;</code>来把Tuple从引用类型转换为被引用的类型。模板函数的右值引用参数会自动根据引用折叠的规则转换为左值引用或者右值引用。<code>std::tuple_size&lt;Tuple&gt;</code>不能从引用类型中获取Tuple的长度。</p>
+<p>注意f上的<code>std::forward</code>，用右值引用的目的是接受包括lambda在内的所有可调用对象，这些对象可以是一个lambda字面量，可以是一个具名的存储了lambda的变量，还以可以是函数指针或者任何重载了<code>template &lt;typename T&gt; void operator()(const T&amp;)</code>运算符的类的实例。所以很难假设这么广范围内的可调用对象都是可以被复制的，所以保险起见<strong>使用模板的右值引参数来将不可以复制的内容用右值引用捕获</strong>。当然因为移动语义会产生副作用，这点用户得自己负担，而我们也不得不对f使用<code>std::forward</code>进行<a href="https://www.jianshu.com/p/d19fc8447eaa">完美转发</a>。不过这样好处也不是没有，至少我们省去了很多不必要的复制。</p>
+<p>但是上述方案会在编译时报错。因为该模板递归会超过允许的最大深度。</p>
+<p>编译器在编译函数的时候是需要把所有条件分支都编译的，<strong>所以即使是在函数模板的实例达到退出递归的条件，else分支仍然会被编译</strong>，而在这个分支里模板会被不断<strong>递归实例化</strong>，最终超过允许的最大递归深度。</p>
+<p>模板递归的一个重要规则：<strong>我们应该用模板特化或是函数重载来实现递归的终止条件</strong>。</p>
+<p>然而函数模板不支持偏特化，函数重载本质上仍需要使用到递归。针对函数模板不支持偏特化，一般使用Functor代替函数，并实现<code>operator()</code>即使用类模板偏特化代替函数模板偏特化,可参考<a href="https://zhuanlan.zhihu.com/p/268600376?utm_source=qq">知乎文章</a>。</p>
+<h4 id="类模板实现">类模板实现</h4>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor, std::<span class="keyword">size_t</span> Start, std::<span class="keyword">size_t</span> End&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">classic_for_each_tuple_helper</span> &#123;</span></span><br><span class="line">    <span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="keyword">const</span> Tuple &amp;t, Functor &amp;&amp;f)</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">        <span class="built_in">f</span>(std::get&lt;Start&gt;(t));</span><br><span class="line">        classic_for_each_tuple_helper&lt;Tuple, Functor, Start+<span class="number">1</span>, End&gt;()(t, std::forward&lt;Functor&gt;(f));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//递归终止条件，利用类模板特化出Start和End一样的特殊情况</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor, std::<span class="keyword">size_t</span> End&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">classic_for_each_tuple_helper</span>&lt;</span>Tuple, Functor, End, End&gt; &#123;</span><br><span class="line">    <span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="keyword">const</span> Tuple &amp;t, Functor &amp;&amp;f)</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">        <span class="built_in">f</span>(std::get&lt;Start&gt;(t));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//目标接口</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor&gt;</span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">classic_for_each_tuple</span><span class="params">(<span class="keyword">const</span> Tuple &amp;t, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">    classic_for_each_tuple_helper&lt;Tuple, Functor, <span class="number">0</span>, std::tuple_size_v&lt;Tuple&gt; - <span class="number">1</span>&gt;()(t, std::forward&lt;Functor&gt;(f));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//解决传入空tuple的编译错误</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Functor&gt;</span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">classic_for_each_tuple</span><span class="params">(<span class="keyword">const</span> std::tuple&lt;&gt; &amp;, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>传入空tuple，问题发生在<code>std::tuple_size_v&lt;Tuple&gt; - 1</code>，当tuple为空时size为0，而对无符号数的0减去1会导致回环，从而导致get使用的索引的范围十分巨大，超过了模板递归深度限制；而更致命的是get一个无效的索引（tuple为空，任何索引都无效）是被<code>static_assert</code>断言的编译期错误，并且往往会产生一大长串错误信息导致debug困难。</p>
+<h4 id="constexpr方案">constexpr方案</h4>
+<p>C++17提供编译器期间计算的条件分支，一般形式如下：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">if</span> <span class="title">constexpr</span> <span class="params">(编译期常量表达式)</span> </span>&#123;</span><br><span class="line">	work1</span><br><span class="line">&#125;<span class="keyword">else</span> &#123;</span><br><span class="line">	work2</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>constexpr if</code>最大的威力在于如果条件表达式为真，那么else里的语句根本不会被编译，反之亦然。当然这得是在模板里，否则else分支的代码仍然会被编译器检查代码的语法正确性。</p>
+<p>因此，我可将<code>constexpr if</code>应用于原始方案，避免模板递归深度过大。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor, <span class="keyword">int</span> Index&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">for_each_tuple_impl</span><span class="params">(Tuple &amp;&amp;t, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">if</span> <span class="title">constexpr</span> <span class="params">(Index &gt;= std::tuple_size&lt; std::<span class="keyword">remove_reference_t</span>&lt;Tuple&gt; &gt;::value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">f</span>(std::get&lt;Index&gt;(t));</span><br><span class="line">        for_each_tuple_impl&lt;Tuple, Functor, Index+<span class="number">1</span>&gt;(std::forward&lt;Tuple&gt;(t), std::forward&lt;Functor&gt;(f));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">for_each_tuple</span><span class="params">(Tuple &amp;&amp;t, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">    for_each_tuple_impl&lt;Tuple, Functor, <span class="number">0</span>&gt;(std::forward&lt;Tuple&gt;(t), std::forward&lt;Functor&gt;(f));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="支持变长模板参数模板">支持变长模板参数模板</h4>
+<p>c++17之前想要处理变长模板参数，还得依靠模板递归，使用get根据元素的类型来获取相应的数据。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor, <span class="keyword">typename</span> First, <span class="keyword">typename</span>... Ts&gt;</span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">for_each_tuple2_impl</span><span class="params">(<span class="keyword">const</span> Tuple&amp; t, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">f</span>(std::get&lt;First&gt;(t));</span><br><span class="line">    for_each_tuple2_impl&lt;Tuple, Functor, Ts...&gt;(t, std::forward&lt;Functor&gt;(f));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor&gt;</span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">for_each_tuple2_impl</span><span class="params">(<span class="keyword">const</span> Tuple&amp;, Functor&amp;&amp;)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Functor, <span class="keyword">typename</span>... Ts&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">for_each_tuple2</span><span class="params">(<span class="keyword">const</span> std::tuple&lt;Ts...&gt; &amp;t, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">	for_each_tuple2_impl&lt;std::tuple&lt;Ts...&gt;, Functor, Ts...&gt;(t, std::forward&lt;Functor&gt;(f)); <span class="comment">// 调用时Ts... 转换为（First, Ts...）</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当我们这样调用<code>for_each_tuple2_impl&lt;std::tuple&lt;Ts...&gt;, Functor, Ts...&gt;</code>时，实际上会展开成<code>for_each_tuple2_impl&lt;std::tuple&lt;Type1, Type2, ..., TypeN&gt;, Functor, Type1, Type2, ..., TypeN.&gt;</code>。</p>
+<p>对应到我们的<code>template &lt;typename Tuple, typename Functor, typename First, typename... Ts&gt;</code>, First就会是Type1，而其他剩下来的类型又会被收集到<code>for_each_tuple2_impl</code>的Ts里，这样我们就分离出了第一次个tuple里的元素。</p>
+<p>然后我们使用<code>std::get&lt;First&gt;(t)</code>获取到这个元素，然后递归重复上述步骤。</p>
+<p>Ts的第一个参数会被逐个分离，最后一直到Ts和First都为空，这是递归就该结束了，所以我们写出了第二个<code>for_each_tuple2_impl</code>模板来处理这一情况。</p>
+<p>因为tuple的类型参数列表的顺序和其中包含元素是对应的，所以我们可以实现遍历。</p>
+<p>但是对于get<Type>，当Type出现不止一次时，给用get<Type>会编译出错。</Type></Type></p>
+<h4 id="折叠表达式方案">折叠表达式方案</h4>
+<p><a href="https://blog.csdn.net/ding_yingzi/article/details/79973809">折叠表达式</a>用于按照给定的模式展开变长模板参数包，而integer_sequence则可以用来包含0-N的整数类型非类型模板参数。</p>
+<p>使用<code>integer_sequence</code>可以构建一个包含所有tuple元素索引的编译期整数常量序列，配合折叠表达式可以把这些索引展开利用，这样正好可以让get用上每一个索引：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor, std::<span class="keyword">size_t</span>... Is&gt;</span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">for_each_tuple3_impl</span><span class="params">(<span class="keyword">const</span> Tuple &amp;t, Functor &amp;&amp;f, std::index_sequence&lt;Is...&gt;)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//展开（(f(std::get&lt;0&gt;(t), (f(std::get&lt;1&gt;(t)), ...)</span></span><br><span class="line">    (<span class="built_in">f</span>(std::get&lt;Is&gt;(t)), ...);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor&gt;</span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">for_each_tuple3</span><span class="params">(<span class="keyword">const</span> Tuple &amp;t, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//std::make_index_sequence&lt;std::tuple_size_v&lt;Tuple&gt;&gt;产生一个index_sequence&lt;0,1,2,...,N&gt;</span></span><br><span class="line">    for_each_tuple3_impl(t, Functor, std::make_index_sequence&lt;std::tuple_size_v&lt;Tuple&gt;&gt;());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这次不再是模板递归了，我们生成了所有元素的索引，然后教编译器硬编码了所有的get操作，形式上不太像但确确实实完成了遍历操作。</p>
+<p>标准规定了<code>std::make_index_sequence&lt;0&gt;</code>会生成一个空的序列，而逗号运算符的一元折叠表达式对于空的参数包会安全地返回void，所以在传入一个空tuple时我们的函数是noop的。</p>
+<p>这个方案不会产生一大堆的模板实例，生成的二进制文件也是清爽干净的。同时因为不是递归，也不会受到递归深度限制的影响。</p>
+]]></content>
+      <categories>
+        <category>c++</category>
+      </categories>
+      <tags>
+        <tag>c++模板使用</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ZeroMQ</title>
+    <url>/2022/06/05/zmq/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="/assets/js/Meting.min.js"></script><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo aptitude install libtool pkg-config build-essential autoconf automake</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/zeromq/libzmq.git</span><br><span class="line"><span class="built_in">cd</span> libzmq</span><br><span class="line">mkdir build &amp;&amp; <span class="built_in">cd</span> build &amp;&amp; cmake ..</span><br><span class="line">sudo make -j4 install</span><br><span class="line"></span><br><span class="line">git <span class="built_in">clone</span> git@github.com:zeromq/cppzmq.git</span><br><span class="line"><span class="built_in">cd</span> cppzmq.git</span><br><span class="line">mkdir build &amp;&amp; <span class="built_in">cd</span> build &amp;&amp; cmake ..</span><br><span class="line"><span class="comment">#出现问题：</span></span><br><span class="line"><span class="comment">#-- Looking for pthread_create</span></span><br><span class="line"><span class="comment">#-- Looking for pthread_create - not found</span></span><br><span class="line"><span class="comment">#-- Looking for pthread_create in pthreads</span></span><br><span class="line"><span class="comment">#-- Looking for pthread_create in pthreads - not found</span></span><br><span class="line"><span class="comment">#-- Looking for pthread_create in pthread</span></span><br><span class="line"><span class="comment">#-- Looking for pthread_create in pthread - found</span></span><br><span class="line"><span class="comment">#-- Found Threads: TRUE  </span></span><br><span class="line"><span class="comment">#CMake Error at tests/CMakeLists.txt:13 (FetchContent_MakeAvailable):</span></span><br><span class="line"><span class="comment">#  Unknown CMake command &quot;FetchContent_MakeAvailable&quot;.</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#解决, CmakeList.txt要求版本3.11, 我的版本为3.13但是失败，删除当前的版本，安装3.18版本：</span></span><br><span class="line"><span class="comment">#sudo aptitude remove cmake</span></span><br><span class="line"><span class="comment">#下载https://github.com/Kitware/CMake/releases/download/v3.18.0/cmake-3.18.0-Linux-x86_64.sh</span></span><br><span class="line"><span class="comment">#sudo sh cmake-3.18.0-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#失败，电脑死机重启翻墙软件导致的代理问题</span></span><br><span class="line"><span class="comment">#fatal: unable to access &#x27;https://github.com/catchorg/Catch2.git/&#x27;: gnutls_handshake() failed: The TLS connection was non-properly terminated.</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#解决：</span></span><br><span class="line"><span class="comment">#unset http_proxy</span></span><br><span class="line"><span class="comment">#unset https_proxy</span></span><br><span class="line"></span><br><span class="line">sudo make -j4 install</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>网络编程</category>
+      </categories>
+      <tags>
+        <tag>分布式库</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>一个TCP的简单实验</title>
+    <url>/2021/11/19/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84tcp%E5%AE%9E%E9%AA%8C/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="/assets/css/APlayer.min.css"><script src="/assets/js/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="/assets/js/Meting.min.js"></script><h3 id="一个tcp的简单实验">一个TCP的简单实验</h3>
+<h4 id="dd指令">dd指令</h4>
+<p><strong>dd</strong>，是 device driver 的缩写，它可以称得上是“Linux 世界中的搬运工”，它用来读取设备、文件中的内容，并原封不动地复制到指定位置。当我们用 dd 命令读取 /dev/null 文件时，就可以创造出空洞文件。<span id="more"></span></p>
+<p>dd的参数：</p>
+<ul>
+<li>if=文件名：指定输入文件名或者设备名，如果省略“if=文件名”，则表示从标准输入读取。</li>
+<li>of=文件名：指定输出文件名或者设备名，如果省略“of=文件名”，则表示写到标准输出。</li>
+<li>bs=N：设置单次读入或单次输出的数据块（block）的大小为 N 个字节。当然也可以使用 ibs 和 obs 选项来分别设置。</li>
+<li>ibs=N：单次读入的数据块（block）的大小为 N 个字节，默认为 512 字节。</li>
+<li>obs=N：单次输出的数据块（block）的大小为 N 个字节，默认为 512 字节。</li>
+<li>count=N：表示总共要复制 N 个数据块（block）。</li>
+</ul>
+<p><strong>/dev/null</strong> 代表空设备文件，它等价于一个仅仅写文件，全部写入它的内容都会永远丢失。而尝试从它那儿读取内容则什么也读不到。</p>
+<p><strong>/dev/zero</strong> 可以产生连续不断的 null 的流（二进制的零流），用于向设备或文件写入 null 数据，一般用它来对设备或文件进行初始化。</p>
+<p><strong>/dev/urandom</strong> 是“随机数设备”，它的本领就是可以生成理论意义上的随机数。</p>
+<h4 id="nc指令">nc指令</h4>
+<p>nc是netcat的缩写，作用：</p>
+<ul>
+<li>实现任意TCP/UDP端口的侦听，nc可以作为server以TCP或UDP方式侦听指定端口</li>
+<li>端口的扫描，nc可以作为client发起TCP或UDP连接</li>
+<li>机器之间传输文件</li>
+<li>机器之间网络测速</li>
+</ul>
+<p>nc参数：</p>
+<ul>
+<li>
+<p>-l，用于指定nc将处于侦听模式。指定该参数，则意味着nc被当作server，侦听并接受连接，而非向其它地址发起连接。</p>
+</li>
+<li>
+<p>-s，指定发送数据的源IP地址，适用于多网卡机。</p>
+</li>
+<li>
+<p>-u，指定nc使用UDP协议，默认为TCP。</p>
+</li>
+<li>
+<p>-v，输出交互或出错信息，新手调试时尤为有用。</p>
+</li>
+<li>
+<p>-z，表示zero，表示扫描时不发送任何数据</p>
+</li>
+</ul>
+<p>(1) 网络连通性测试和端口扫描</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#nc可以作为server端启动一个tcp的监听端口&lt;port&gt;</span></span><br><span class="line">nc -l &lt;port&gt;</span><br><span class="line"><span class="comment">#nc作为server端启动一个udp的监听端口&lt;port&gt;</span></span><br><span class="line">nc -ul &lt;port&gt;</span><br></pre></td></tr></table></figure>
+<p>(2) 机器之间传输文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#在&lt;port&gt;端口接收到的&lt;ip&gt;的数据都写到&lt;file&gt;文件里</span></span><br><span class="line">nc -l &lt;ip&gt; &lt;port&gt; &gt; &lt;file&gt;</span><br><span class="line"><span class="comment">#通过本地的&lt;port&gt;端口发送&lt;file&gt;文件</span></span><br><span class="line">nc -l &lt;port&gt; &lt; &lt;file&gt;</span><br></pre></td></tr></table></figure>
+<p>（3）测试网速</p>
+<p>测试网速其实利用了传输文件的原理，就是把来自一台机器的/dev/zero 发送给另一台机器的/dev/null，就是把一台机器的无限个0，传输给另一个机器的空设备上，然后新开一个窗口使用dstat命令监测网速。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. A机器先启动接收数据的命令，监听自己的&lt;port&gt;端口，把来自这个端口的数据都输出给空设备（这样不写磁盘，测试网速更准确）</span></span><br><span class="line">nc -l &lt;port&gt; &gt; /dev/null</span><br><span class="line"><span class="comment"># 2. B机器发送数据，把无限个0发送给A机器的&lt;port&gt;端口</span></span><br><span class="line">nc &lt;ip&gt; &lt;port&gt; &lt; /dev/zero</span><br><span class="line"><span class="comment">#使用dstat命令查看当前网速，dstat命令比较直观，它可以查看当前cpu，磁盘，网络，内存页和系统的一些当前状态指标。</span></span><br><span class="line">dstat</span><br></pre></td></tr></table></figure>
+<p>参考<a href="https://www.cnblogs.com/nmap/p/6148306.html">blog</a>。</p>
+<h4 id="本机测试">本机测试</h4>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#shell A</span></span><br><span class="line">dd <span class="keyword">if</span>=/dev/zero bs=1MB count=10000 | nc localhost 5001</span><br><span class="line"></span><br><span class="line"><span class="comment">#shell B</span></span><br><span class="line">nc -l 5001 &gt; /dev/null</span><br><span class="line"></span><br><span class="line"><span class="comment">#shell B，添加pv指令显示实时带宽，通过管道显示数据处理进度的信息</span></span><br><span class="line">nc -l 5001 | pv -W  &gt; /dev/null</span><br><span class="line"></span><br><span class="line"><span class="comment"># result</span></span><br><span class="line">记录了10000+0 的读入</span><br><span class="line">记录了10000+0 的写出</span><br><span class="line">10000000000 bytes (10 GB, 9.3 GiB) copied, 9.49315 s, 1.1 GB/s</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic.imgdb.cn/item/619746b32ab3f51d91c32cb3.png" alt="数据传输"></p>
+<h4 id="带宽">带宽</h4>
+<p>带宽的实际含义是在给定时间等条件下流过特定区域的最大数据位数。数字信息流的基本单位是bit（比特），时间的基本单位是s（秒），因此bit/s（比特/秒）是描述<a href="https://baike.baidu.com/item/%E5%B8%A6%E5%AE%BD">带宽</a>的单位，1bit/s是带宽的基本单位。</p>
+<p>吞吐量是指在规定时间、空间及数据在网络中所走的路径（网络路径）的前提下，下载文件时实际获得的带宽值。</p>
+]]></content>
+      <categories>
+        <category>网络编程学习-陈硕</category>
+      </categories>
+      <tags>
+        <tag>网络编程</tag>
+      </tags>
+  </entry>
+</search>

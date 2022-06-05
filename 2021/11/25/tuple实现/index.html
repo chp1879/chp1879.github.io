@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+  
+
+    <head>
+      <meta charset="utf-8" />
+       
+      <meta name="keywords" content="生活，学习，工作" />
+       
+      <meta name="description" content="名中有海，一切随缘" />
+      
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>tuple遍历 |  海之家</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css"
+      />
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    <link rel="alternate" href="/atom.xml" title="海之家" type="application/atom+xml">
+<link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      <canvas class="fireworks"></canvas>
+      <style>
+        .fireworks {
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 99999;
+          pointer-events: none;
+        }
+      </style>
+      
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="tuple遍历-tuple实现"
+  class="article article-type-tuple遍历"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  tuple遍历
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/11/25/tuple%E5%AE%9E%E7%8E%B0/" class="article-date">
+  <time datetime="2021-11-25T13:52:54.000Z" itemprop="datePublished">2021-11-25</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/c/">c++</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">2.7k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">11 分钟</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="tuple">tuple</h3>
+<p>pair类型是每个成员变量各自可以是任意类型，但只能有两个成员。相对与pair，tuple可以有任意数量的成员，但是每个确定的tuple类型的成员数目是固定的。<span id="more"></span></p>
+<h4 id="tuple使用">tuple使用</h4>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;tuple&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    tuple&lt;<span class="keyword">int</span>,string,<span class="keyword">float</span>, pair&lt;<span class="keyword">int</span>, <span class="keyword">int</span>&gt;&gt; <span class="built_in">tp</span>(<span class="number">1</span>, <span class="string">&quot;hello world&quot;</span> ,<span class="number">3.1</span>, &#123;<span class="number">8</span>,<span class="number">8</span>&#125;);</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;第一个元素为:&quot;</span>&lt;&lt;get&lt;<span class="number">0</span>&gt;(tp)&lt;&lt;endl;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;第二个元素为:&quot;</span>&lt;&lt;get&lt;<span class="number">1</span>&gt;(tp)&lt;&lt;endl;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;第三个元素为:&quot;</span>&lt;&lt;get&lt;<span class="number">2</span>&gt;(tp)&lt;&lt;endl;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;第三个元素为:&quot;</span>&lt;&lt;get&lt;<span class="number">3</span>&gt;(tp).first &lt;&lt; <span class="string">&quot; &quot;</span>&lt;&lt; get&lt;<span class="number">3</span>&gt;(tp).second &lt;&lt; endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出：</span></span><br><span class="line"><span class="comment">第一个元素为:1</span></span><br><span class="line"><span class="comment">第二个元素为:hello world</span></span><br><span class="line"><span class="comment">第三个元素为:3.1</span></span><br><span class="line"><span class="comment">第三个元素为:8 8</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<p>tuple可以存储引用，pair，但是不能存储stl容器。</p>
+<h4 id="tuple的操作">tuple的操作</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">操作</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">make_tuple(v1, v2, …, vn)</td>
+<td>返回一个给定初始值初始化的tuple,类型从初始值推断</td>
+</tr>
+<tr>
+<td style="text-align:left">t1 == t2</td>
+<td>当俩个tuple具有相同数量的成员且成员对应相等时</td>
+</tr>
+<tr>
+<td style="text-align:left">t1 != t2</td>
+<td>与上一个相反</td>
+</tr>
+<tr>
+<td style="text-align:left">get<i><em>(t)</em></i></td>
+<td>返回t的第i个数据成员</td>
+</tr>
+<tr>
+<td style="text-align:left">tuple_size<Tuple>::value</Tuple></td>
+<td>给定了tuple中成员的数量</td>
+</tr>
+<tr>
+<td style="text-align:left">get<Type>(t)</Type></td>
+<td>返回Type类型的数据成员，t中仅有唯一的Type类型数据</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tuple遍历">tuple遍历</h3>
+<p>tuple的get<i>需要的索引i只能是编译期常量，因此是无法依赖现有的循环语句去实现索引的递增的。参考<a target="_blank" rel="noopener" href="https://www.cnblogs.com/apocelipes/p/14536236.html">博客</a>学习tuple遍历以及模板元编程。</i></p>
+<p>标准库的for_each:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">Iterator</span>, <span class="keyword">class</span> <span class="title">UnaryFunction</span>&gt;</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">for_each</span><span class="params">(Iterator first, Iterator last, UnaryFunction f)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="comment">//UnaryFunction的函数签名为void fun(const Type &amp;a)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span></span><br><span class="line"><span class="function"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span></span><br><span class="line"><span class="function"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span></span><br><span class="line"><span class="function"><span class="keyword">using</span> <span class="keyword">namespace</span> std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">f</span> &#123;</span></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123; cout &lt;&lt; i &lt;&lt; <span class="string">&quot; &quot;</span>; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vector&lt;<span class="keyword">int</span>&gt; vec = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;lambda:&quot;</span>;</span><br><span class="line">    for_each(vec.<span class="built_in">begin</span>(), vec.<span class="built_in">end</span>(), [=](<span class="keyword">int</span> i)&#123;</span><br><span class="line">        cout &lt;&lt; i &lt;&lt; <span class="string">&quot; &quot;</span>;</span><br><span class="line">    &#125;);</span><br><span class="line">    cout &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;opeator():&quot;</span>;</span><br><span class="line">    for_each(vec.<span class="built_in">begin</span>(), vec.<span class="built_in">end</span>(), <span class="built_in">f</span>());</span><br><span class="line">    cout &lt;&lt; endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出：</span></span><br><span class="line"><span class="comment">lambda:1 2 3 4 5 </span></span><br><span class="line"><span class="comment">opeator():1 2 3 4 5 </span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<p>由于tuple没有迭代器，因此for_each_tuple设计为以下形式：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">Tuple</span>, <span class="keyword">class</span> <span class="title">Functor</span>&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">for_each_tuple</span><span class="params">(<span class="keyword">const</span> Tuple &amp;t, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> element in t : <span class="built_in">f</span>(t);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="原始方案">原始方案</h4>
+<p>该方案使用模板递归思想，逐个遍历Tuple中的元素。从0开始，每遍历处理完一项就让index+1，然后递归调用<code>for_each_tuple_impl</code>。如果到了最后一个元素+1的位置，函数就返回，遍历结束。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor, <span class="keyword">int</span> Index&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">for_each_tuple_impl</span><span class="params">(Tuple &amp;&amp;t, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(Index &gt;= std::tuple_size&lt; std::<span class="keyword">remove_reference_t</span>&lt;Tuple&gt; &gt;::value) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">f</span>(std::get&lt;Index&gt;(t));</span><br><span class="line">        for_each_tuple_impl&lt;Tuple, Functor, Index+<span class="number">1</span>&gt;(std::forward&lt;Tuple&gt;(t), std::forward&lt;Functor&gt;(f));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">for_each_tuple</span><span class="params">(Tuple &amp;&amp;t, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">    for_each_tuple_impl&lt;Tuple, Functor, <span class="number">0</span>&gt;(std::forward&lt;Tuple&gt;(t), std::forward&lt;Functor&gt;(f));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Index 属于非类型形参，是内置类型形参，在模板定义的内部是常量值，只能是整型，指针和引用，一般不应用于函数模板中，参考<a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/c-templates-detail.html">菜鸟教程</a>。</p>
+<p><code>std::remove_reference_t&lt;&gt;</code>来把Tuple从引用类型转换为被引用的类型。模板函数的右值引用参数会自动根据引用折叠的规则转换为左值引用或者右值引用。<code>std::tuple_size&lt;Tuple&gt;</code>不能从引用类型中获取Tuple的长度。</p>
+<p>注意f上的<code>std::forward</code>，用右值引用的目的是接受包括lambda在内的所有可调用对象，这些对象可以是一个lambda字面量，可以是一个具名的存储了lambda的变量，还以可以是函数指针或者任何重载了<code>template &lt;typename T&gt; void operator()(const T&amp;)</code>运算符的类的实例。所以很难假设这么广范围内的可调用对象都是可以被复制的，所以保险起见<strong>使用模板的右值引参数来将不可以复制的内容用右值引用捕获</strong>。当然因为移动语义会产生副作用，这点用户得自己负担，而我们也不得不对f使用<code>std::forward</code>进行<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/d19fc8447eaa">完美转发</a>。不过这样好处也不是没有，至少我们省去了很多不必要的复制。</p>
+<p>但是上述方案会在编译时报错。因为该模板递归会超过允许的最大深度。</p>
+<p>编译器在编译函数的时候是需要把所有条件分支都编译的，<strong>所以即使是在函数模板的实例达到退出递归的条件，else分支仍然会被编译</strong>，而在这个分支里模板会被不断<strong>递归实例化</strong>，最终超过允许的最大递归深度。</p>
+<p>模板递归的一个重要规则：<strong>我们应该用模板特化或是函数重载来实现递归的终止条件</strong>。</p>
+<p>然而函数模板不支持偏特化，函数重载本质上仍需要使用到递归。针对函数模板不支持偏特化，一般使用Functor代替函数，并实现<code>operator()</code>即使用类模板偏特化代替函数模板偏特化,可参考<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/268600376?utm_source=qq">知乎文章</a>。</p>
+<h4 id="类模板实现">类模板实现</h4>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor, std::<span class="keyword">size_t</span> Start, std::<span class="keyword">size_t</span> End&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">classic_for_each_tuple_helper</span> &#123;</span></span><br><span class="line">    <span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="keyword">const</span> Tuple &amp;t, Functor &amp;&amp;f)</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">        <span class="built_in">f</span>(std::get&lt;Start&gt;(t));</span><br><span class="line">        classic_for_each_tuple_helper&lt;Tuple, Functor, Start+<span class="number">1</span>, End&gt;()(t, std::forward&lt;Functor&gt;(f));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//递归终止条件，利用类模板特化出Start和End一样的特殊情况</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor, std::<span class="keyword">size_t</span> End&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">classic_for_each_tuple_helper</span>&lt;</span>Tuple, Functor, End, End&gt; &#123;</span><br><span class="line">    <span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="keyword">const</span> Tuple &amp;t, Functor &amp;&amp;f)</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">        <span class="built_in">f</span>(std::get&lt;Start&gt;(t));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//目标接口</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor&gt;</span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">classic_for_each_tuple</span><span class="params">(<span class="keyword">const</span> Tuple &amp;t, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">    classic_for_each_tuple_helper&lt;Tuple, Functor, <span class="number">0</span>, std::tuple_size_v&lt;Tuple&gt; - <span class="number">1</span>&gt;()(t, std::forward&lt;Functor&gt;(f));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//解决传入空tuple的编译错误</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Functor&gt;</span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">classic_for_each_tuple</span><span class="params">(<span class="keyword">const</span> std::tuple&lt;&gt; &amp;, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>传入空tuple，问题发生在<code>std::tuple_size_v&lt;Tuple&gt; - 1</code>，当tuple为空时size为0，而对无符号数的0减去1会导致回环，从而导致get使用的索引的范围十分巨大，超过了模板递归深度限制；而更致命的是get一个无效的索引（tuple为空，任何索引都无效）是被<code>static_assert</code>断言的编译期错误，并且往往会产生一大长串错误信息导致debug困难。</p>
+<h4 id="constexpr方案">constexpr方案</h4>
+<p>C++17提供编译器期间计算的条件分支，一般形式如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">if</span> <span class="title">constexpr</span> <span class="params">(编译期常量表达式)</span> </span>&#123;</span><br><span class="line">	work1</span><br><span class="line">&#125;<span class="keyword">else</span> &#123;</span><br><span class="line">	work2</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>constexpr if</code>最大的威力在于如果条件表达式为真，那么else里的语句根本不会被编译，反之亦然。当然这得是在模板里，否则else分支的代码仍然会被编译器检查代码的语法正确性。</p>
+<p>因此，我可将<code>constexpr if</code>应用于原始方案，避免模板递归深度过大。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor, <span class="keyword">int</span> Index&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">for_each_tuple_impl</span><span class="params">(Tuple &amp;&amp;t, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">if</span> <span class="title">constexpr</span> <span class="params">(Index &gt;= std::tuple_size&lt; std::<span class="keyword">remove_reference_t</span>&lt;Tuple&gt; &gt;::value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">f</span>(std::get&lt;Index&gt;(t));</span><br><span class="line">        for_each_tuple_impl&lt;Tuple, Functor, Index+<span class="number">1</span>&gt;(std::forward&lt;Tuple&gt;(t), std::forward&lt;Functor&gt;(f));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">for_each_tuple</span><span class="params">(Tuple &amp;&amp;t, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">    for_each_tuple_impl&lt;Tuple, Functor, <span class="number">0</span>&gt;(std::forward&lt;Tuple&gt;(t), std::forward&lt;Functor&gt;(f));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="支持变长模板参数模板">支持变长模板参数模板</h4>
+<p>c++17之前想要处理变长模板参数，还得依靠模板递归，使用get根据元素的类型来获取相应的数据。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor, <span class="keyword">typename</span> First, <span class="keyword">typename</span>... Ts&gt;</span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">for_each_tuple2_impl</span><span class="params">(<span class="keyword">const</span> Tuple&amp; t, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">f</span>(std::get&lt;First&gt;(t));</span><br><span class="line">    for_each_tuple2_impl&lt;Tuple, Functor, Ts...&gt;(t, std::forward&lt;Functor&gt;(f));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor&gt;</span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">for_each_tuple2_impl</span><span class="params">(<span class="keyword">const</span> Tuple&amp;, Functor&amp;&amp;)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Functor, <span class="keyword">typename</span>... Ts&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">for_each_tuple2</span><span class="params">(<span class="keyword">const</span> std::tuple&lt;Ts...&gt; &amp;t, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">	for_each_tuple2_impl&lt;std::tuple&lt;Ts...&gt;, Functor, Ts...&gt;(t, std::forward&lt;Functor&gt;(f)); <span class="comment">// 调用时Ts... 转换为（First, Ts...）</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当我们这样调用<code>for_each_tuple2_impl&lt;std::tuple&lt;Ts...&gt;, Functor, Ts...&gt;</code>时，实际上会展开成<code>for_each_tuple2_impl&lt;std::tuple&lt;Type1, Type2, ..., TypeN&gt;, Functor, Type1, Type2, ..., TypeN.&gt;</code>。</p>
+<p>对应到我们的<code>template &lt;typename Tuple, typename Functor, typename First, typename... Ts&gt;</code>, First就会是Type1，而其他剩下来的类型又会被收集到<code>for_each_tuple2_impl</code>的Ts里，这样我们就分离出了第一次个tuple里的元素。</p>
+<p>然后我们使用<code>std::get&lt;First&gt;(t)</code>获取到这个元素，然后递归重复上述步骤。</p>
+<p>Ts的第一个参数会被逐个分离，最后一直到Ts和First都为空，这是递归就该结束了，所以我们写出了第二个<code>for_each_tuple2_impl</code>模板来处理这一情况。</p>
+<p>因为tuple的类型参数列表的顺序和其中包含元素是对应的，所以我们可以实现遍历。</p>
+<p>但是对于get<Type>，当Type出现不止一次时，给用get<Type>会编译出错。</Type></Type></p>
+<h4 id="折叠表达式方案">折叠表达式方案</h4>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/ding_yingzi/article/details/79973809">折叠表达式</a>用于按照给定的模式展开变长模板参数包，而integer_sequence则可以用来包含0-N的整数类型非类型模板参数。</p>
+<p>使用<code>integer_sequence</code>可以构建一个包含所有tuple元素索引的编译期整数常量序列，配合折叠表达式可以把这些索引展开利用，这样正好可以让get用上每一个索引：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor, std::<span class="keyword">size_t</span>... Is&gt;</span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">for_each_tuple3_impl</span><span class="params">(<span class="keyword">const</span> Tuple &amp;t, Functor &amp;&amp;f, std::index_sequence&lt;Is...&gt;)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//展开（(f(std::get&lt;0&gt;(t), (f(std::get&lt;1&gt;(t)), ...)</span></span><br><span class="line">    (<span class="built_in">f</span>(std::get&lt;Is&gt;(t)), ...);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Tuple, <span class="keyword">typename</span> Functor&gt;</span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">void</span> <span class="title">for_each_tuple3</span><span class="params">(<span class="keyword">const</span> Tuple &amp;t, Functor &amp;&amp;f)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//std::make_index_sequence&lt;std::tuple_size_v&lt;Tuple&gt;&gt;产生一个index_sequence&lt;0,1,2,...,N&gt;</span></span><br><span class="line">    for_each_tuple3_impl(t, Functor, std::make_index_sequence&lt;std::tuple_size_v&lt;Tuple&gt;&gt;());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这次不再是模板递归了，我们生成了所有元素的索引，然后教编译器硬编码了所有的get操作，形式上不太像但确确实实完成了遍历操作。</p>
+<p>标准规定了<code>std::make_index_sequence&lt;0&gt;</code>会生成一个空的序列，而逗号运算符的一元折叠表达式对于空的参数包会安全地返回void，所以在传入一个空tuple时我们的函数是noop的。</p>
+<p>这个方案不会产生一大堆的模板实例，生成的二进制文件也是清爽干净的。同时因为不是递归，也不会受到递归深度限制的影响。</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，著作权归作者所有。转载请注明出处！
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/11/25/tuple%E5%AE%9E%E7%8E%B0/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c-%E6%A8%A1%E6%9D%BF%E4%BD%BF%E7%94%A8/" rel="tag">c++模板使用</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/11/30/buttonRpc/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            buttonRpc
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/11/23/ttcp/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">ttcp</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "",
+    app_key: "",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+   
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021-2022
+        <i class="ri-heart-fill heart_icon"></i> Hubert-Che
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="海之家"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/playlist">歌单</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i></p>
+  <div class="reward-box">
+    
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script>
+
+<script src="/js/clickBoom1.js"></script>
+ 
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    <div id="music">
+    
+    
+    
+    <iframe frameborder="no" border="1" marginwidth="0" marginheight="0" width="200" height="52"
+        src="//music.163.com/outchain/player?type=2&id=504770480&auto=1&height=32"></iframe>
+</div>
+
+<style>
+    #music {
+        position: fixed;
+        right: 15px;
+        bottom: 0;
+        z-index: 998;
+    }
+</style>
+    
+    
+
+  </div>
+</body>
+
+</html>

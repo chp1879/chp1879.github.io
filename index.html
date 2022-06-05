@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN">
+  
+
+    <head>
+      <meta charset="utf-8" />
+       
+      <meta name="keywords" content="生活，学习，工作" />
+       
+      <meta name="description" content="名中有海，一切随缘" />
+      
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title> 海之家</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css"
+      />
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    <link rel="alternate" href="/atom.xml" title="海之家" type="application/atom+xml">
+<link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      <canvas class="fireworks"></canvas>
+      <style>
+        .fireworks {
+          position: fixed;
+          left: 0;
+          top: 0;
+          z-index: 99999;
+          pointer-events: none;
+        }
+      </style>
+      
+      
+    <main class="content on">
+      
+<section class="cover">
+    
+  <div class="cover-frame">
+    <div class="bg-box">
+      <img src="/images/cover2.jpg" alt="image frame" />
+    </div>
+    <div class="cover-inner text-center text-white">
+      <h1><a href="/">海之家</a></h1>
+      <div id="subtitle-box">
+        
+        <span id="subtitle"></span>
+        
+      </div>
+      <div>
+        
+      </div>
+    </div>
+  </div>
+  <div class="cover-learn-more">
+    <a href="javascript:void(0)" class="anchor"><i class="ri-arrow-down-line"></i></a>
+  </div>
+</section>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js"></script>
+
+
+<!-- Subtitle -->
+
+  <script>
+    try {
+      var typed = new Typed("#subtitle", {
+        strings: ['想被遗忘，怕被遗忘', '愿一生努力，一生被爱', '想要的都拥有，得不到的都释怀'],
+        startDelay: 0,
+        typeSpeed: 200,
+        loop: true,
+        backSpeed: 100,
+        showCursor: true
+      });
+    } catch (err) {
+      console.log(err)
+    }
+  </script>
+  
+<div id="main">
+  <section class="outer">
+  
+  
+  
+
+<div class="notice" style="margin-top:50px">
+    <i class="ri-heart-fill"></i>
+    <div class="notice-content" id="broad"></div>
+</div>
+<script type="text/javascript">
+    fetch('https://v1.hitokoto.cn')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("broad").innerHTML = data.hitokoto;
+        })
+        .catch(console.error)
+</script>
+
+<style>
+    .notice {
+        padding: 20px;
+        border: 1px dashed #e6e6e6;
+        color: #969696;
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        background: #fbfbfb50;
+        border-radius: 10px;
+    }
+
+    .notice i {
+        float: left;
+        color: #999;
+        font-size: 16px;
+        padding-right: 10px;
+        vertical-align: middle;
+        margin-top: -2px;
+    }
+
+    .notice-content {
+        display: initial;
+        vertical-align: middle;
+    }
+</style>
+  
+  <article class="articles">
+    
+    
+    
+    
+    <article
+  id="post-hexo博客搭建"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2022/06/05/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/"
+    >Deepin/Ubuntu搭建hexo个人博客</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2022/06/05/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" class="article-date">
+  <time datetime="2022-06-05T07:11:18.311Z" itemprop="datePublished">2022-06-05</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">博客搭建</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <p>欢迎来到海之家博客! 接下来介绍本博客搭建过程！</p> 
+      <a class="article-more-link" href="/2022/06/05/hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/"
+        >阅读更多...</a
+      >
+       
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
+  id="post-zmq"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2022/06/05/zmq/"
+    >ZeroMQ</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2022/06/05/zmq/" class="article-date">
+  <time datetime="2022-06-05T07:11:18.311Z" itemprop="datePublished">2022-06-05</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/">网络编程</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">sudo aptitude install libtool pkg-config build-essential autoconf automake</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/zeromq/libzmq.git</span><br><span class="line"><span class="built_in">cd</span> libzmq</span><br><span class="line">mkdir build &amp;&amp; <span class="built_in">cd</span> build &amp;&amp; cmake ..</span><br><span class="line">sudo make -j4 install</span><br><span class="line"></span><br><span class="line">git <span class="built_in">clone</span> git@github.com:zeromq/cppzmq.git</span><br><span class="line"><span class="built_in">cd</span> cppzmq.git</span><br><span class="line">mkdir build &amp;&amp; <span class="built_in">cd</span> build &amp;&amp; cmake ..</span><br><span class="line"><span class="comment">#出现问题：</span></span><br><span class="line"><span class="comment">#-- Looking for pthread_create</span></span><br><span class="line"><span class="comment">#-- Looking for pthread_create - not found</span></span><br><span class="line"><span class="comment">#-- Looking for pthread_create in pthreads</span></span><br><span class="line"><span class="comment">#-- Looking for pthread_create in pthreads - not found</span></span><br><span class="line"><span class="comment">#-- Looking for pthread_create in pthread</span></span><br><span class="line"><span class="comment">#-- Looking for pthread_create in pthread - found</span></span><br><span class="line"><span class="comment">#-- Found Threads: TRUE  </span></span><br><span class="line"><span class="comment">#CMake Error at tests/CMakeLists.txt:13 (FetchContent_MakeAvailable):</span></span><br><span class="line"><span class="comment">#  Unknown CMake command &quot;FetchContent_MakeAvailable&quot;.</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#解决, CmakeList.txt要求版本3.11, 我的版本为3.13但是失败，删除当前的版本，安装3.18版本：</span></span><br><span class="line"><span class="comment">#sudo aptitude remove cmake</span></span><br><span class="line"><span class="comment">#下载https://github.com/Kitware/CMake/releases/download/v3.18.0/cmake-3.18.0-Linux-x86_64.sh</span></span><br><span class="line"><span class="comment">#sudo sh cmake-3.18.0-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#失败，电脑死机重启翻墙软件导致的代理问题</span></span><br><span class="line"><span class="comment">#fatal: unable to access &#x27;https://github.com/catchorg/Catch2.git/&#x27;: gnutls_handshake() failed: The TLS connection was non-properly terminated.</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#解决：</span></span><br><span class="line"><span class="comment">#unset http_proxy</span></span><br><span class="line"><span class="comment">#unset https_proxy</span></span><br><span class="line"></span><br><span class="line">sudo make -j4 install</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%BA%93/" rel="tag">分布式库</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
+  id="post-Question"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2022/03/15/Question/"
+    >Question</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2022/03/15/Question/" class="article-date">
+  <time datetime="2022-03-15T07:33:55.000Z" itemprop="datePublished">2022-03-15</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h4 id="github-fatal-unable-to-access-https-github-com-git-failed-to-connect-to-127-0-0-1-port-8888-拒绝连接解决">Github: fatal: unable to access ‘<a target="_blank" rel="noopener" href="https://github.com/**.git">https://github.com/**.git</a>’: Failed to connect to 127.0.0.1 port 8888: 拒绝连接解决</h4>
+<p>出现问题的原因是设置了代理上网，可以使用<code>git config --global -l</code>可以查看代理，在使用以下指令后依然无效：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global --unset http.proxy</span><br><span class="line">git config --global --unset https.proxy</span><br></pre></td></tr></table></figure>
+<p>正确的做法：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">export https_proxy=&quot;&quot;</span><br><span class="line">export http_proxy=&quot;&quot;</span><br><span class="line">export ftp_proxy=&quot;&quot;</span><br></pre></td></tr></table></figure>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%97%AE%E9%A2%98%E6%94%B6%E9%9B%86/" rel="tag">-问题收集</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
+  id="post-buttonRpc"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2021/11/30/buttonRpc/"
+    >buttonRpc</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/11/30/buttonRpc/" class="article-date">
+  <time datetime="2021-11-30T02:56:07.000Z" itemprop="datePublished">2021-11-30</time>
+</a>    
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="preliminary">Preliminary</h3>
+<h4 id="std-enable-if">std::enable_if</h4>
+<p>C++11 引入了 <code>std::enable_if</code>函数，功能为满足条件时类型有效，作为选择类型的小工具，其广泛的应用在 C++ 的模板元编程（meta programming）中，包含在<code>#include &lt;type_traits&gt;</code>中，函数原型如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">bool</span> _if, <span class="class"><span class="keyword">class</span> <span class="title">T</span> =</span> <span class="keyword">void</span>&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">enable_if</span>;</span></span><br></pre></td></tr></table></figure>
+<p>可能的函数实现:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">bool</span> _if, <span class="class"><span class="keyword">class</span> <span class="title">T</span> =</span> <span class="keyword">void</span>&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">enable_if</span> &#123;</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;calss T&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">enable_if</span>&lt;</span><span class="literal">true</span>, T&gt; &#123;<span class="keyword">typedef</span> T type&#125;</span><br></pre></td></tr></table></figure>
+<p>由上可知，只有当第一个模板参数为true时，enable_if会包含一个type=T的公有成员，否则没有该公有成员。</p>
+<p>在实际使用过程中，<code>std::enable_if</code> 可用于：1)限制模板函数的参数类型；2)模板类型偏特化。</p>
+<p>在某些场景下，我们需要实现只有特定类型可以调用的模板函数。如下代码所示，通过对返回值使用<code>std::enable_if</code>和在模板参数中使用<code>std::enable_if</code>均实现了只允许整形参数调用函数的功能。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// enable_if example: two ways of using enable_if</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;type_traits&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 1. 返回类型 (bool)只有当T是整型时才有效:</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="keyword">typename</span> std::enable_if&lt;std::is_integral&lt;T&gt;::value,<span class="keyword">bool</span>&gt;::<span class="function">type</span></span><br><span class="line"><span class="function"> <span class="title">is_odd</span> <span class="params">(T i)</span> </span>&#123;<span class="keyword">return</span> <span class="built_in"><span class="keyword">bool</span></span>(i%<span class="number">2</span>);&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. 第二个模板参数只有当T是整型时才有效:</span></span><br><span class="line"><span class="keyword">template</span> &lt; <span class="class"><span class="keyword">class</span> <span class="title">T</span>, <span class="keyword">class</span> =</span> <span class="keyword">typename</span> std::enable_if&lt;std::is_integral&lt;T&gt;::value&gt;::type &gt;</span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">is_even</span> <span class="params">(T i)</span> </span>&#123;<span class="keyword">return</span> !<span class="built_in"><span class="keyword">bool</span></span>(i%<span class="number">2</span>);&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">short</span> <span class="keyword">int</span> i = <span class="number">1</span>;  </span><br><span class="line">    <span class="comment">//float i = 1.0; </span></span><br><span class="line">    std::cout &lt;&lt; std::boolalpha;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;i is odd: &quot;</span> &lt;&lt; <span class="built_in">is_odd</span>(i) &lt;&lt; std::endl;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;i is even: &quot;</span> &lt;&lt; <span class="built_in">is_even</span>(i) &lt;&lt; std::endl;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//short int i = 1, 输出</span></span><br><span class="line"><span class="comment">//i is odd: true</span></span><br><span class="line"><span class="comment">//i is even: false</span></span><br><span class="line"><span class="comment">// float i = 1.0, 编译错误</span></span><br><span class="line"><span class="comment">//error: no matching function for call to ‘is_odd(float&amp;)’</span></span><br><span class="line"><span class="comment">//error: no matching function for call to ‘is_even(float&amp;)’</span></span><br><span class="line">    </span><br></pre></td></tr></table></figure>
+<p>在使用模板编程时，可以利用<code>std::enable_if</code>的特性根据模板参数的不同特性进行不同的类型选择。</p>
+<p>如下所示，我们可以实现一个检测变量是否为智能指针的实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;type_traits&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;memory&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">is_smart_pointer_helper</span> :</span> <span class="keyword">public</span> std::false_type &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">is_smart_pointer_helper</span>&lt;</span>std::shared_ptr&lt;T&gt; &gt; : <span class="keyword">public</span> std::true_type &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">is_smart_pointer_helper</span>&lt;</span>std::unique_ptr&lt;T&gt; &gt; : <span class="keyword">public</span> std::true_type &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">is_smart_pointer_helper</span>&lt;</span>std::weak_ptr&lt;T&gt; &gt; : <span class="keyword">public</span> std::true_type &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">is_smart_pointer</span> :</span> <span class="keyword">public</span> is_smart_pointer_helper&lt;<span class="keyword">typename</span> std::remove_cv&lt;T&gt;::type&gt; &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">typename</span> std::enable_if&lt;is_smart_pointer&lt;T&gt;::value,<span class="keyword">void</span>&gt;::<span class="function">type </span></span><br><span class="line"><span class="function"><span class="title">check_smart_pointer</span><span class="params">(<span class="keyword">const</span> T&amp; t)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  std::cout &lt;&lt; <span class="string">&quot;is smart pointer&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">typename</span> std::enable_if&lt;!is_smart_pointer&lt;T&gt;::value,<span class="keyword">void</span>&gt;::<span class="function">type <span class="title">check_smart_pointer</span><span class="params">(<span class="keyword">const</span> T&amp; t)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  std::cout &lt;&lt; <span class="string">&quot;not smart pointer&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">int</span>* <span class="title">p</span><span class="params">(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">2</span>))</span></span>;</span><br><span class="line">  <span class="function">std::shared_ptr&lt;<span class="keyword">int</span>&gt; <span class="title">pp</span><span class="params">(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">2</span>))</span></span>;</span><br><span class="line">  <span class="function">std::unique_ptr&lt;<span class="keyword">int</span>&gt; <span class="title">upp</span><span class="params">(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">4</span>))</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">check_smart_pointer</span>(p);</span><br><span class="line">  <span class="built_in">check_smart_pointer</span>(pp);</span><br><span class="line">  <span class="built_in">check_smart_pointer</span>(upp);</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出</span></span><br><span class="line"><span class="comment">//not smart pointer</span></span><br><span class="line"><span class="comment">//is smart pointer</span></span><br><span class="line"><span class="comment">//is smart pointer</span></span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://www.jb51.net/article/198482.htm">参考</a>。</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rpc/" rel="tag">rpc</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
+  id="tuple遍历-tuple实现"
+  class="article article-type-tuple遍历"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2021/11/25/tuple%E5%AE%9E%E7%8E%B0/"
+    >tuple遍历</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/11/25/tuple%E5%AE%9E%E7%8E%B0/" class="article-date">
+  <time datetime="2021-11-25T13:52:54.000Z" itemprop="datePublished">2021-11-25</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/c/">c++</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="tuple">tuple</h3>
+<p>pair类型是每个成员变量各自可以是任意类型，但只能有两个成员。相对与pair，tuple可以有任意数量的成员，但是每个确定的tuple类型的成员数目是固定的。</p> 
+      <a class="article-more-link" href="/2021/11/25/tuple%E5%AE%9E%E7%8E%B0/"
+        >阅读更多...</a
+      >
+       
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c-%E6%A8%A1%E6%9D%BF%E4%BD%BF%E7%94%A8/" rel="tag">c++模板使用</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
+  id="ttcp-ttcp"
+  class="article article-type-ttcp"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2021/11/23/ttcp/"
+    >ttcp</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/11/23/ttcp/" class="article-date">
+  <time datetime="2021-11-23T01:19:32.000Z" itemprop="datePublished">2021-11-23</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/">网络编程学习</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <p>性能指标</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">带宽：MB/s</span><br><span class="line">吞吐量：messages/s, queries/s(QPS), transactions/s(TPS)</span><br><span class="line">延迟：</span><br><span class="line">资源使用率：</span><br><span class="line">其他开销：（压缩和加盟）CPU使用</span><br></pre></td></tr></table></figure>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" rel="tag">网络编程</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
+  id="一个TCP的简单实验-一个简单的tcp实验"
+  class="article article-type-一个TCP的简单实验"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2021/11/19/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84tcp%E5%AE%9E%E9%AA%8C/"
+    >一个TCP的简单实验</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/11/19/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84tcp%E5%AE%9E%E9%AA%8C/" class="article-date">
+  <time datetime="2021-11-19T02:07:45.000Z" itemprop="datePublished">2021-11-19</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0-%E9%99%88%E7%A1%95/">网络编程学习-陈硕</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="一个tcp的简单实验">一个TCP的简单实验</h3>
+<h4 id="dd指令">dd指令</h4>
+<p><strong>dd</strong>，是 device driver 的缩写，它可以称得上是“Linux 世界中的搬运工”，它用来读取设备、文件中的内容，并原封不动地复制到指定位置。当我们用 dd 命令读取 /dev/null 文件时，就可以创造出空洞文件。</p> 
+      <a class="article-more-link" href="/2021/11/19/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84tcp%E5%AE%9E%E9%AA%8C/"
+        >阅读更多...</a
+      >
+       
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" rel="tag">网络编程</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+    <article
+  id="post-MapReduce"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2021/11/17/MapReduce/"
+    >MapReduce理解</a> 
+</h2>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/11/17/MapReduce/" class="article-date">
+  <time datetime="2021-11-17T14:20:47.000Z" itemprop="datePublished">2021-11-17</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%A6%E4%B9%A0/">分布式学习</a>
+  </div>
+   
+    </div>
+      
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h3 id="mapreduce解析">MapReduce解析</h3>
+<p>Map 本质是拆解， Reduce的本质是组合。MapReduce 包括Input，Split，Map，Shuffle，Reduce，Finalize，即将数据划分拆解重排组合输出。</p> 
+      <a class="article-more-link" href="/2021/11/17/MapReduce/"
+        >阅读更多...</a
+      >
+       
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag">大数据</a></li></ul>
+
+    </footer>
+  </div>
+
+    
+ 
+    
+</article>
+
+    
+  </article>
+  
+
+  
+</section>
+</div>
+
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2021-2022
+        <i class="ri-heart-fill heart_icon"></i> Hubert-Che
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>访问人数:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>浏览次数:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="海之家"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/playlist">歌单</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i></p>
+  <div class="reward-box">
+    
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<script src="https://cdn.jsdelivr.net/npm/animejs@latest/anime.min.js"></script>
+
+<script src="/js/clickBoom1.js"></script>
+ 
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    <div id="music">
+    
+    
+    
+    <iframe frameborder="no" border="1" marginwidth="0" marginheight="0" width="200" height="52"
+        src="//music.163.com/outchain/player?type=2&id=504770480&auto=1&height=32"></iframe>
+</div>
+
+<style>
+    #music {
+        position: fixed;
+        right: 15px;
+        bottom: 0;
+        z-index: 998;
+    }
+</style>
+    
+    
+
+  </div>
+</body>
+
+</html>
